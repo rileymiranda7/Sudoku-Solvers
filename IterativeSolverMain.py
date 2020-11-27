@@ -14,6 +14,18 @@ solvedBoard = [
     [9, 7, 5, 4, 2, 1, 3, 8, 6],
     [4, 1, 6, 9, 3, 8, 5, 2, 7],
 ]
+# for printing
+unsolvedBoard = [
+    [6, 0, 0, 3, 5, 4, 0, 0, 2],
+    [7, 4, 0, 0, 0, 0, 0, 5, 0],
+    [0, 5, 2, 1, 0, 0, 8, 0, 0],
+    [0, 9, 0, 6, 0, 0, 1, 0, 8],
+    [5, 0, 4, 0, 0, 0, 2, 0, 9],
+    [1, 0, 8, 0, 0, 2, 0, 6, 0],
+    [0, 0, 3, 0, 0, 7, 9, 4, 0],
+    [0, 7, 0, 0, 0, 0, 0, 8, 6],
+    [4, 0, 0, 9, 3, 8, 0, 0, 7],
+]
 
 # the unsolved, current board
 currBoard = [
@@ -228,12 +240,12 @@ def sudokuSolver(currBoard):
                 break
 
 
-# print unsolved board
-print("Unsolved board:")
-for row in currBoard:
-    print(row)
 
 sudokuSolver(currBoard)
+# print unsolved board
+print("Unsolved board:")
+for row in unsolvedBoard:
+    print(row)
 # print expected solved board and returned solved board
 print("Expected solved board:\t\t   Returned Solved Board:")
 for row in range(9):
