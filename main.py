@@ -1,8 +1,7 @@
-# Program for solving a Sudoku board iteratively
-__author__ = "Riley Miranda"
-from Blank import Blank
-
+# Program for solving a Sudoku board recursively
+_author_ = "Riley Miranda"
 # zeroes represent blank squares
+
 solvedBoard = [
     [6, 8, 9, 3, 5, 4, 7, 1, 2],
     [7, 4, 1, 2, 8, 9, 6, 5, 3],
@@ -15,7 +14,7 @@ solvedBoard = [
     [4, 1, 6, 9, 3, 8, 5, 2, 7],
 ]
 
-# the unsolved, current board
+# the unsolved board
 currBoard = [
     [6, 0, 0, 3, 5, 4, 0, 0, 2],
     [7, 4, 0, 0, 0, 0, 0, 5, 0],
@@ -27,207 +26,104 @@ currBoard = [
     [0, 7, 0, 0, 0, 0, 0, 8, 6],
     [4, 0, 0, 9, 3, 8, 0, 0, 7],
 ]
-# returns the numbers in the whole row that aren't zero for the purpose of seeing what we can't put in blank square
-# in that row
-def getNumInRow(currRow):
-    numInRow = []
-    for j in range(len(currRow)):
-        if currRow[j] != 0:
-            numInRow.append(currRow[j])
-    return numInRow
-
-
-# returns the numbers in the whole column that aren't zero for the purpose of seeing what we can't put in blank square
-# in that column
-def getNumInCol(currBoard, j):
-    numInCol = []
-    # i is which row we are in; j is fixed position of each row to get column numbers
-    for i in range(len(currBoard)):
-        if currBoard[i][j] != 0:
-            numInCol.append(currBoard[i][j])
-    return numInCol
-
-#returns numbers in square that aren't zero
-def getNumInSquare(currBoard, i, j):
-    numInSquare = []
-    #each if elif block represents the square we could be in from 1 (top left corner) to 9 (bottom right corner)
-    if 0 <= i <= 2 and 0 <= j <= 2: # square 1 (upper left corner)
-        numInSquare += currBoard[0][0:3]
-        numInSquare = numInSquare + currBoard[1][0:3]
-        numInSquare += currBoard[2][0:3]
-    elif 0 <= i <= 2 and 3 <= j <= 5: # square 2 (upper middle)
-        numInSquare += currBoard[0][3:6]
-        numInSquare = numInSquare + currBoard[1][3:6]
-        numInSquare += currBoard[2][3:6]
-    elif 0 <= i <= 2 and 6 <= j <= 8: # square 3 (upper right corner)
-        numInSquare += currBoard[0][6:9]
-        numInSquare = numInSquare + currBoard[1][6:9]
-        numInSquare += currBoard[2][6:9]
-    # row 2
-    elif 3 <= i <= 5 and 0 <= j <= 2: # square 4 (left middle row)
-        numInSquare += currBoard[3][0:3]
-        numInSquare = numInSquare + currBoard[4][0:3]
-        numInSquare += currBoard[5][0:3]
-    elif 3 <= i <= 5 and 3 <= j <= 5: # square 5 (middle middle row)
-        numInSquare += currBoard[3][3:6]
-        numInSquare = numInSquare + currBoard[4][3:6]
-        numInSquare += currBoard[5][3:6]
-    elif 3 <= i <= 5 and 6 <= j <= 8: # square 6 (right middle row)
-        numInSquare += currBoard[3][6:9]
-        numInSquare = numInSquare + currBoard[4][6:9]
-        numInSquare += currBoard[5][6:9]
-    # row 3
-    elif 6 <= i <= 8 and 0 <= j <= 2: # square 7 (bottom left corner)
-        numInSquare += currBoard[6][0:3]
-        numInSquare = numInSquare + currBoard[7][0:3]
-        numInSquare += currBoard[8][0:3]
-    elif 6 <= i <= 8 and 3 <= j <= 5: # square 8 (middle bottom row)
-        numInSquare += currBoard[6][3:6]
-        numInSquare = numInSquare + currBoard[7][3:6]
-        numInSquare += currBoard[8][3:6]
-    elif 6 <= i <= 8 and 6 <= j <= 8: # square 9 (bottom right corner)
-        numInSquare += currBoard[6][6:9]
-        numInSquare = numInSquare + currBoard[7][6:9]
-        numInSquare += currBoard[8][6:9]
-
-
-    # clears zeros
-    atLastEle = False
-    k = 0
-    while (not(atLastEle)):
-        if k > (len(numInSquare) - 1):
-            break
-            atLastEle = True
-        if numInSquare[k] == 0:
-            del numInSquare[k]
-            k -= 1
-        k += 1
-    return numInSquare
+# returns true if the number we chose is already in the row and therefore can't be used and false otherwise
+def numInRow(currBoard, row, num):
+    for i in range(9):
+        if currBoard[row][i] == num:
+            return True
+    return False
 
 
 
-# returns set of numbers (1-9) that are available to be placed in that blank (don't conflict with row, col, or square)
-def getNumsThatWork(numInRow, numInCol, numInSquare):
-    totalNums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    numsThatWork = []
-    numsThatDontWork =[]
-    for i in range(len(numInRow)):
-        if numInRow[i] != 0:
-            numsThatDontWork.append(numInRow[i])
-    for j in range(len(numInCol)):
-        if numInCol[j] != 0 and not(numInCol[j] in numsThatDontWork): # will not add numbers already in list
-            numsThatDontWork.append(numInCol[j])
-    for k in range(len(numInSquare)):
-        if numInSquare[k] != 0 and not(numInSquare[k] in numsThatDontWork):
-            numsThatDontWork.append(numInSquare[k])
-    # subtract numsThatDontWork from numsThatWork: need to use larger sized list for iterating
-    if len(totalNums) >= len(numsThatDontWork):
-        largerLen = len(totalNums)
+# returns true if the number we chose is already in the col and therefore can't be used and false otherwise
+def numInCol(currBoard, col, num):
+    for i in range(9):
+        if currBoard[i][col] == num:
+            return True
+    return False
+
+# returns true if the number we chose is already in the 3x3 square and therefore can't be used and false otherwise
+# automatically starts at top right corner of 3x3 for easy iteration
+def numInSquare(currBoard, row, col, num):
+    for i in range(3):
+        for j in range(3):
+            # iterates through 3x3 square by incrementing the col 3 times for each of the 3 rows
+            if currBoard[i + row][j + col] == num:
+                return True
+    return False
+# returns true if number chosen is not already in row, col, or 3x3
+def numWorksInBlank(currBoard, row, col, num):
+    #
+    if not numInRow(currBoard, row, num) and not numInCol(currBoard, col, num) and not numInSquare(currBoard,
+    # % row/col - row/col % 3 automatically sets up the row and col to be in the top right corner of the blank's 3x3
+    # box so numInSquare can easily iterate through
+    row - row % 3, col - col % 3, num):
+        return True
     else:
-        largerLen = len(numsThatDontWork)
-    for h in range(largerLen):
-        if not(totalNums[h] in numsThatDontWork):
-            numsThatWork.append(totalNums[h])
-    return numsThatWork
+        return False
 
+
+# Finds location of blank if it exists and sets the list rowCol to that location where in rowCol [row, col]
+# returns false if no blanks
+def thereIsBlank(currBoard, rowCol):
+    for row in range(9):
+        for col in range(9):
+            if currBoard[row][col] == 0:
+                rowCol[0] = row
+                rowCol[1] = col
+                return True
+    return False
 
 def sudokuSolver(currBoard):
-    # create list of Blank objects and index
-    blanksList = []
-    BListI = -1
+    # sets up blank location reference list
+    rowCol = [0, 0]
+    # if there is not a blank
+    if not thereIsBlank(currBoard, rowCol):
+        return True
 
-    # index for nested while loops
-    row = 0
-    col = 0
+    # get row and col of blank from findBlank if blank is found from rowCol reference list
+    row = rowCol[0]
+    col = rowCol[1]
 
-    # boolean for backtracking
-    back = False
+    # try nums 1 to 9
+    for num in range(1, 10): # 1 inclusive 10 exclusive
+        # if none of the nums 1 through 9 work we go back to last stack and reset the spot we filled in to 0 (blank)
+        # and try the next number from 1 through 9
+        if numWorksInBlank(currBoard, row, col, num):
 
-    while row < 9:
-        while col < 9:
-            print("row: ", row)
-            print("col", col)
-            # if program comes across a blank square
-            if currBoard[row][col] == 0:
-                if not back:
-                    # get lists of current nonzero numbers in the whole row and whole column
-                    numInRow = getNumInRow(currBoard[row])
-                    numInCol = getNumInCol(currBoard, col)
-                    numInSquare = getNumInSquare(currBoard, row, col)
+            # try assigning num
+            currBoard[row][col] = num
 
-                    # use prev lists to come up with list of numbers we can place in blank
-                    numsThatWork = getNumsThatWork(numInRow, numInCol, numInSquare)
-                    print("numsThatWork: ", numsThatWork)
+            # recursive call
+            if sudokuSolver(currBoard):
+                # if board gets solved
+                return True
 
-                    # create new Blank object with numsThatWork and append to list
-                    blanksList.append(Blank(numsThatWork))
-                    BListI += 1
-                    print("BListI: ", BListI)
+            # board isn't solved and need to backtrack
+            currBoard[row][col] = 0
 
-                #  assign row and col to Blank object
-                blanksList[BListI].row = row
-                blanksList[BListI].col = col
+    return False
 
-                # if there are no numbers that work for the blank we picked the wrong number somewhere and need to
-                # back track
-                if len(blanksList[BListI].numsThatWork) == 0:
-                    # keep backtracking until we find blank position with more than option in numsThatWork
-                    numsThatWorkIsEmpty = True
-                    while numsThatWorkIsEmpty:
-                        # set row and col back to last blank location as long as we are not on first blank
-                        if BListI != 0:
-                            row = blanksList[BListI - 1].row
-                            col = blanksList[BListI - 1].col
-                            print("prev blank loc: ", row, " ", col)
-                        # set previous Blank object's value to 0
-                        currBoard[row][col] = 0
-
-                        # delete the last blank's first number that works so next number in list is tried
-                        if BListI == 0:
-                            print("numsThatWork length: ", len(blanksList[BListI].numsThatWork))
-                            del blanksList[BListI].numsThatWork[0]
-                        else:
-                            del blanksList[BListI - 1].numsThatWork[0]
-
-                        # delete current Blank object
-                        if BListI != 0:
-                            del blanksList[BListI]
-                        # go into backtracking mode for previous Blank object
-                        back = True
-                        BListI -= 1
-
-                        # end loop if current blank has a new path to solve board (still has value in numsThatWork after
-                        # deleting a value
-                        if len(blanksList[BListI].numsThatWork) != 0:
-                            numsThatWorkIsEmpty = False
-                            print("not empty")
-                else:
-                    if back:
-                        back = False
-
-                    # set blank to first value in numsThatWork
-                    currBoard[row][col] = blanksList[BListI].numsThatWork[0]
-                    print("at ", row, ",", col, " value: ", currBoard[row][col], "\n")
-
-                    # increment row and col
-                    if col == 8:
-                        row += 1
-                        col = 0
-                    else:
-                        col += 1
-            # else location is not blank
-            else:
-                if col == 8:
-                    row += 1
-                    col = 0
-                else:
-                    col += 1
-            # break loop at last location on board (bottom right) because we need col 8 to shift to next row
-            # so col never reaches 9 and while col < 9 never returns false
-            if row == 9 and col == 0:
-                break
-
-sudokuSolver(currBoard)
-print("Solved board: ")
+# print unsolved board
+print("Unsolved board:")
 for row in currBoard:
     print(row)
+
+sudokuSolver(currBoard)
+# print expected solved board and returned solved board
+print("Expected solved board:\t\t   Returned Solved Board:")
+for row in range(9):
+    print(solvedBoard[row], "  ", currBoard[row])
+
+
+
+
+            
+
+
+
+
+
+
+
+
