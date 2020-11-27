@@ -227,7 +227,14 @@ def sudokuSolver(currBoard):
             if row == 9 and col == 0:
                 break
 
-sudokuSolver(currBoard)
-print("Solved board: ")
+
+# print unsolved board
+print("Unsolved board:")
 for row in currBoard:
     print(row)
+
+sudokuSolver(currBoard)
+# print expected solved board and returned solved board
+print("Expected solved board:\t\t   Returned Solved Board:")
+for row in range(9):
+    print(solvedBoard[row], "  ", currBoard[row])
