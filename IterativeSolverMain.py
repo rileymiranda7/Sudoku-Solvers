@@ -1,6 +1,6 @@
 # Program for solving a Sudoku board iteratively
 __author__ = "Riley Miranda"
-from Blank import Blank
+from BlankClass import Blank
 
 # zeroes represent blank squares
 solvedBoard = [
